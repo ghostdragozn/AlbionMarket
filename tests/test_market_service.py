@@ -50,17 +50,32 @@ def test_upsert_market_listing_creates_and_updates_listing() -> None:
 def test_calculate_arbitrage_applies_tax_rate() -> None:
     session = build_session()
 
-    upsert_market_listing(session, city_id=1, item_id=1, unit_price=Decimal("100"), quantity=10)
-    upsert_market_listing(session, city_id=2, item_id=1, unit_price=Decimal("160"), quantity=8)
+    upsert_market_listing(session, city_id=1, item_id=1, unit_price=Decimal("100"), quantity=10, ratio="Cao")
+    upsert_market_listing(session, city_id=2, item_id=1, unit_price=Decimal("160"), quantity=8, ratio="Thấp")
 
     opportunities = calculate_arbitrage_opportunities(session)
 
     best = opportunities[0]
     assert best["source_city"] == "Fort Sterling"
     assert best["destination_city"] == "Thetford"
+    assert best["source_ratio"] == "Cao"
+    assert best["destination_ratio"] == "Thấp"
     assert best["item_code"] == "ORE-I"
     assert best["net_sell_price"] == Decimal("143.92")
     assert best["per_unit_profit"] == Decimal("43.92")
     assert best["roi_percent"] == Decimal("43.92")
     assert best["tradable_quantity"] == 8
     assert best["total_profit"] == Decimal("351.36")
+
+
+def test_calculate_arbitrage_supports_sorting() -> None:
+    session = build_session()
+
+    upsert_market_listing(session, city_id=1, item_id=1, unit_price=Decimal("100"), quantity=10, ratio="Cao")
+    upsert_market_listing(session, city_id=2, item_id=1, unit_price=Decimal("160"), quantity=8, ratio="Thấp")
+    upsert_market_listing(session, city_id=1, item_id=2, unit_price=Decimal("100"), quantity=10, ratio="Trung Bình")
+    upsert_market_listing(session, city_id=2, item_id=2, unit_price=Decimal("130"), quantity=10, ratio="Cao")
+
+    opportunities = calculate_arbitrage_opportunities(session, sort_by="roi_percent", sort_order="asc")
+
+    assert opportunities[0]["roi_percent"] <= opportunities[-1]["roi_percent"]

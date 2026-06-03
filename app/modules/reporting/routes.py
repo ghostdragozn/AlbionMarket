@@ -1,4 +1,5 @@
 from pathlib import Path
+from urllib.parse import urlencode
 
 from fastapi import APIRouter, Depends, Query, Request
 from fastapi.responses import HTMLResponse
@@ -27,13 +28,33 @@ def reports_page(
     city_id: str | None = Query(default=None),
     category: str | None = Query(default=None),
     tier: str | None = Query(default=None),
+    sort_by: str = Query(default="total_profit"),
+    sort_order: str = Query(default="desc"),
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
     selected_city_id = parse_optional_int(city_id)
     selected_tier = parse_optional_int(tier)
     cities = db.scalars(select(City).order_by(City.name)).all()
     categories, tiers = get_item_filter_options(db)
-    context = build_reports_context(db, city_id=selected_city_id, category=category, tier=selected_tier)
+    context = build_reports_context(
+        db,
+        city_id=selected_city_id,
+        category=category,
+        tier=selected_tier,
+        arbitrage_sort_by=sort_by,
+        arbitrage_sort_order=sort_order,
+    )
+
+    def build_sort_url(column: str) -> str:
+        next_order = "asc" if sort_by != column or sort_order == "desc" else "desc"
+        params: dict[str, str | int] = {"sort_by": column, "sort_order": next_order}
+        if selected_city_id is not None:
+            params["city_id"] = selected_city_id
+        if category:
+            params["category"] = category
+        if selected_tier is not None:
+            params["tier"] = selected_tier
+        return f"/reports?{urlencode(params)}"
     context.update(
         {
             "request": request,
@@ -43,6 +64,9 @@ def reports_page(
             "selected_city_id": selected_city_id,
             "selected_category": category,
             "selected_tier": selected_tier,
+            "arbitrage_sort_by": sort_by,
+            "arbitrage_sort_order": sort_order,
+            "build_sort_url": build_sort_url,
         }
     )
     return templates.TemplateResponse(request, "reports/index.html", context)

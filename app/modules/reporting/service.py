@@ -122,6 +122,8 @@ def build_reports_context(
     city_id: int | None = None,
     category: str | None = None,
     tier: int | None = None,
+    arbitrage_sort_by: str = "total_profit",
+    arbitrage_sort_order: str = "desc",
 ) -> dict[str, object]:
     trade_rows = build_trade_rows(db, city_id=city_id, category=category, tier=tier)
     return {
@@ -129,5 +131,11 @@ def build_reports_context(
         "city_profit_rows": build_city_profit_rows(trade_rows),
         "item_profit_rows": build_item_profit_rows(trade_rows),
         "overall_profit": get_overall_profit(trade_rows),
-        "arbitrage_rows": calculate_arbitrage_opportunities(db, category=category, tier=tier),
+        "arbitrage_rows": calculate_arbitrage_opportunities(
+            db,
+            category=category,
+            tier=tier,
+            sort_by=arbitrage_sort_by,
+            sort_order=arbitrage_sort_order,
+        ),
     }

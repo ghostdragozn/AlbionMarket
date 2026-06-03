@@ -312,6 +312,54 @@ body.market-body {
     margin: 0;
 }
 
+.sort-link {
+    color: #fff7e3;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+}
+
+.sort-link:hover,
+.sort-link:focus {
+    color: #ffe3a6;
+}
+
+.sort-link.active {
+    color: #ffd166;
+}
+
+.ratio-indicator {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.ratio-dot {
+    width: 0.72rem;
+    height: 0.72rem;
+    border-radius: 50%;
+    display: inline-block;
+    border: 1px solid rgba(43, 36, 24, 0.18);
+    background: #b9a98d;
+}
+
+.ratio-cao .ratio-dot {
+    background: #2f6b3f;
+}
+
+.ratio-trung-bình .ratio-dot,
+.ratio-trung-binh .ratio-dot {
+    background: #d4a72c;
+}
+
+.ratio-thấp .ratio-dot,
+.ratio-thap .ratio-dot {
+    background: #b24f3a;
+}
+
 @media (max-width: 991.98px) {
     .page-header,
     .market-panel,

@@ -9,6 +9,7 @@ from app.core.constants import TAX_RATE, ZERO_MONEY
 from app.models import City, Item, MarketListing
 
 MARKET_RATIO_OPTIONS = ("Cao", "Trung Bình", "Thấp")
+RATIO_SORT_ORDER = {"": 0, None: 0, "Thấp": 1, "Trung Bình": 2, "Cao": 3}
 
 MONEY_PLACES = Decimal("0.01")
 
@@ -113,6 +114,8 @@ def calculate_arbitrage_opportunities(
     db: Session,
     category: str | None = None,
     tier: int | None = None,
+    sort_by: str = "total_profit",
+    sort_order: str = "desc",
 ) -> list[dict[str, object]]:
     item_query = select(Item).order_by(Item.code)
     if category:
@@ -153,6 +156,8 @@ def calculate_arbitrage_opportunities(
                         "tier": item.tier,
                         "source_city": source.city.name,
                         "destination_city": destination.city.name,
+                        "source_ratio": source.ratio or "",
+                        "destination_ratio": destination.ratio or "",
                         "buy_price": normalize_money(source.unit_price),
                         "sell_price": normalize_money(destination.unit_price),
                         "net_sell_price": net_sell_price,
@@ -163,5 +168,13 @@ def calculate_arbitrage_opportunities(
                     }
                 )
 
-    opportunities.sort(key=lambda row: (row["total_profit"], row["per_unit_profit"]), reverse=True)
+    reverse = sort_order != "asc"
+    text_fields = {"item_code", "source_city", "destination_city"}
+    ratio_fields = {"source_ratio", "destination_ratio"}
+    if sort_by in text_fields:
+        opportunities.sort(key=lambda row: str(row[sort_by]).lower(), reverse=reverse)
+    elif sort_by in ratio_fields:
+        opportunities.sort(key=lambda row: RATIO_SORT_ORDER.get(row[sort_by], 0), reverse=reverse)
+    else:
+        opportunities.sort(key=lambda row: row.get(sort_by, Decimal("0.00")), reverse=reverse)
     return opportunities
