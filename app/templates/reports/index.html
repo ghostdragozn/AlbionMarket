@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Reports dashboard</h1>
+        <p class="text-muted mb-0 market-subtitle">Inventory, profit, and tax-aware arbitrage across Albion cities.</p>
+    </div>
+</div>
+
+<form method="get" action="/reports" class="card shadow-sm mb-4 filter-panel">
+    <div class="card-body row g-3 align-items-end">
+        <div class="col-md-4">
+            <label class="form-label">City</label>
+            <select name="city_id" class="form-select">
+                <option value="">All cities</option>
+                {% for city in cities %}
+                <option value="{{ city.id }}" {% if selected_city_id == city.id %}selected{% endif %}>{{ city.name }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label class="form-label">Category</label>
+            <select name="category" class="form-select">
+                <option value="">All categories</option>
+                {% for category in categories %}
+                <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2">
+            <label class="form-label">Tier</label>
+            <select name="tier" class="form-select">
+                <option value="">All tiers</option>
+                {% for tier in tiers %}
+                <option value="{{ tier }}" {% if selected_tier == tier %}selected{% endif %}>{{ tier }}</option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-2 d-grid">
+            <button type="submit" class="btn btn-primary">Apply</button>
+        </div>
+    </div>
+</form>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-4">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted metric-label">Overall net profit</div>
+                <div class="fs-3 fw-semibold metric-value">{{ overall_profit }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted metric-label">Tracked city-item rows</div>
+                <div class="fs-3 fw-semibold metric-value">{{ trade_rows|length }}</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card shadow-sm metric-card">
+            <div class="card-body">
+                <div class="text-muted metric-label">Arbitrage opportunities</div>
+                <div class="fs-3 fw-semibold metric-value">{{ arbitrage_rows|length }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm table-panel">
+    <div class="card-body">
+        <h2 class="h5">Arbitrage opportunities</h2>
+        <div class="table-responsive table-scroll-frame">
+            <table class="table table-striped table-sm align-middle market-table">
+                <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Buy city</th>
+                    <th>Sell city</th>
+                    <th>Buy price</th>
+                    <th>Sell price</th>
+                    <th>Taxed sell</th>
+                    <th>Unit profit</th>
+                    <th>ROI</th>
+                    <th>Tradable qty</th>
+                    <th>Total profit</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in arbitrage_rows %}
+                <tr>
+                    <td>{{ row.item_code }}</td>
+                    <td>{{ row.source_city }}</td>
+                    <td>{{ row.destination_city }}</td>
+                    <td>{{ row.buy_price }}</td>
+                    <td>{{ row.sell_price }}</td>
+                    <td>{{ row.net_sell_price }}</td>
+                    <td>{{ row.per_unit_profit }}</td>
+                    <td>{{ row.roi_percent }}%</td>
+                    <td>{{ row.tradable_quantity }}</td>
+                    <td>{{ row.total_profit }}</td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

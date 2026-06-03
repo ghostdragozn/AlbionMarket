@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Force \"D:\\\\develop\\\\AlbionMarket\" | Where-Object { $_.Name -ne '.venv' })",
+      "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -m pip install -r \"D:\\\\develop\\\\AlbionMarket\\\\requirements.txt\")",
+      "PowerShell(& \"C:\\\\Users\\\\DongTran\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" --version)",
+      "PowerShell(& \"C:\\\\Users\\\\DongTran\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" -m pip --version)",
+      "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -m ensurepip --upgrade)",
+      "PowerShell(& \"C:\\\\Users\\\\DongTran\\\\AppData\\\\Local\\\\Programs\\\\Python\\\\Python313\\\\python.exe\" -m pip install -r \"D:\\\\develop\\\\AlbionMarket\\\\requirements.txt\" --target \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Lib\\\\site-packages\")",
+      "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest \"D:\\\\develop\\\\AlbionMarket\\\\tests\" -q)",
+      "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -c \"import fastapi, sqlalchemy, jinja2, uvicorn; print\\('imports ok'\\)\")",
+      "PowerShell(Stop-Process *)",
+      "PowerShell($env:PYTHONPATH = \"D:\\\\develop\\\\AlbionMarket\"; & \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from app.main import app; print\\(app.title\\)\")"
+    ]
+  }
+}

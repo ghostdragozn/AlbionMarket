@@ -1,0 +1,206 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Market module</h1>
+        <p class="text-muted mb-0 market-subtitle">Enter city item prices and quantities. Full city/item grid shown below.</p>
+    </div>
+</div>
+
+{% if message or error %}
+<div id="market-page-alerts">
+    {% if message %}
+    <div class="alert alert-success">{{ message }}</div>
+    {% endif %}
+    {% if error %}
+    <div class="alert alert-danger">{{ error }}</div>
+    {% endif %}
+</div>
+{% else %}
+<div id="market-page-alerts"></div>
+{% endif %}
+
+<div class="card shadow-sm mb-4 filter-panel">
+    <div class="card-body">
+        <h2 class="h5">Filters</h2>
+        <form method="get" action="/market" class="row g-3">
+            <div class="col-md-4">
+                <label class="form-label">City</label>
+                <select name="city_id" class="form-select">
+                    <option value="">All cities</option>
+                    {% for city in cities %}
+                    <option value="{{ city.id }}" {% if selected_city_id == city.id %}selected{% endif %}>{{ city.name }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Category</label>
+                <select name="category" class="form-select">
+                    <option value="">All categories</option>
+                    {% for category in categories %}
+                    <option value="{{ category }}" {% if selected_category == category %}selected{% endif %}>{{ category }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label class="form-label">Tier</label>
+                <select name="tier" class="form-select">
+                    <option value="">All tiers</option>
+                    {% for tier in tiers %}
+                    <option value="{{ tier }}" {% if selected_tier == tier %}selected{% endif %}>{{ tier }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="col-12 d-flex gap-2">
+                <button type="submit" class="btn btn-outline-primary">Apply filters</button>
+                <a class="btn btn-outline-secondary" href="/market">Reset</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm table-panel price-board-panel">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3 price-board-head">
+            <h2 class="h5 mb-0">Market listings</h2>
+            <span class="text-muted table-caption-muted">{{ rows|length }} rows</span>
+        </div>
+        <div class="table-responsive table-scroll-frame">
+            <table class="table table-striped table-sm align-middle market-table price-board-table">
+                <thead>
+                <tr>
+                    <th>City</th>
+                    <th>Item</th>
+                    <th>Category</th>
+                    <th>Tier</th>
+                    <th>Unit price</th>
+                    <th>Quantity</th>
+                    <th>Ratio</th>
+                    <th>Last updated</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for row in rows %}
+                {% set form_id = 'market-row-' ~ row.city_id ~ '-' ~ row.item_id %}
+                <tr>
+                    <td class="trading-city">{{ row.city_name }}</td>
+                    <td>
+                        <div class="trading-symbol">{{ row.item_code }}</div>
+                        <div class="small table-caption-muted">{{ row.category }} · T{{ row.tier }}</div>
+                    </td>
+                    <td class="text-center trading-tier">{{ row.category }}</td>
+                    <td class="text-center trading-tier">T{{ row.tier }}</td>
+                    <td class="price-cell">
+                        <input form="{{ form_id }}" type="number" min="0" step="0.01" name="unit_price" value="{{ row.unit_price }}" class="form-control form-control-sm price-input" required>
+                    </td>
+                    <td class="text-center">
+                        <span class="badge text-bg-secondary" data-quantity-display>{{ row.quantity if row.quantity else 10000 }}</span>
+                    </td>
+                    <td>
+                        <select form="{{ form_id }}" name="ratio" class="form-select form-select-sm ratio-select">
+                            <option value="">—</option>
+                            {% for ratio_option in ratio_options %}
+                            <option value="{{ ratio_option }}" {% if row.ratio == ratio_option %}selected{% endif %}>{{ ratio_option }}</option>
+                            {% endfor %}
+                        </select>
+                    </td>
+                    <td class="timestamp-cell">
+                        <span class="small text-muted" data-last-updated-display>{{ row.last_updated }}</span>
+                    </td>
+                    <td class="price-status-cell">
+                        <form id="{{ form_id }}" method="post" action="/market/listings" data-market-row-form>
+                            <input type="hidden" name="city_id" value="{{ row.city_id }}">
+                            <input type="hidden" name="item_id" value="{{ row.item_id }}">
+                            <input type="hidden" name="quantity" value="10000">
+                            {% if selected_city_id %}
+                            <input type="hidden" name="return_city_id" value="{{ selected_city_id }}">
+                            {% endif %}
+                            {% if selected_category %}
+                            <input type="hidden" name="return_category" value="{{ selected_category }}">
+                            {% endif %}
+                            {% if selected_tier %}
+                            <input type="hidden" name="return_tier" value="{{ selected_tier }}">
+                            {% endif %}
+                            <button type="submit" class="btn btn-primary btn-sm" data-save-button>Save</button>
+                            <div class="small mt-1" data-row-status aria-live="polite"></div>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const alerts = document.getElementById("market-page-alerts");
+
+    const renderAlert = (kind, message) => {
+        if (!alerts) {
+            return;
+        }
+        alerts.innerHTML = `<div class="alert alert-${kind}">${message}</div>`;
+    };
+
+    document.querySelectorAll("[data-market-row-form]").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            const saveButton = form.querySelector("[data-save-button]");
+            const status = form.querySelector("[data-row-status]");
+            const quantityDisplay = form.closest("tr")?.querySelector("[data-quantity-display]");
+            const ratioSelect = document.querySelector(`select[form="${form.id}"][name="ratio"]`);
+            const lastUpdatedDisplay = form.closest("tr")?.querySelector("[data-last-updated-display]");
+            const unitPriceInput = document.querySelector(`input[form="${form.id}"][name="unit_price"]`);
+            const previousLabel = saveButton.textContent;
+
+            saveButton.disabled = true;
+            saveButton.textContent = "Saving...";
+            status.textContent = "";
+            status.className = "small mt-1";
+
+            try {
+                const response = await fetch(form.action, {
+                    method: "POST",
+                    body: new FormData(form),
+                    headers: {
+                        "X-Requested-With": "XMLHttpRequest",
+                        "Accept": "application/json"
+                    }
+                });
+                const payload = await response.json();
+
+                if (!response.ok || !payload.ok) {
+                    throw new Error(payload.error || "Save failed.");
+                }
+
+                unitPriceInput.value = payload.listing.unit_price;
+                if (quantityDisplay) {
+                    quantityDisplay.textContent = payload.listing.quantity;
+                }
+                if (ratioSelect) {
+                    ratioSelect.value = payload.listing.ratio;
+                }
+                if (lastUpdatedDisplay) {
+                    lastUpdatedDisplay.textContent = payload.listing.last_updated;
+                }
+                status.textContent = payload.message;
+                status.classList.add("text-success");
+                renderAlert("success", payload.message);
+            } catch (error) {
+                status.textContent = error.message;
+                status.classList.add("text-danger");
+                renderAlert("danger", error.message);
+            } finally {
+                saveButton.disabled = false;
+                saveButton.textContent = previousLabel;
+            }
+        });
+    });
+});
+</script>
+{% endblock %}

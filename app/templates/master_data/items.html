@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Item master</h1>
+        <p class="text-muted mb-0 market-subtitle">Create custom products and hard delete items with related Market/Warehouse data.</p>
+    </div>
+</div>
+
+{% if message %}
+<div class="alert alert-success">{{ message }}</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm market-panel admin-panel">
+            <div class="card-body">
+                <h2 class="h5">Add item</h2>
+                <form method="post" action="/master-data/items" class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">Code</label>
+                        <input type="text" name="code" class="form-control" required>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Display name</label>
+                        <input type="text" name="display_name" class="form-control" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Category</label>
+                        <input type="text" name="category" class="form-control" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Tier</label>
+                        <input type="number" name="tier" min="1" step="1" class="form-control" required>
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary w-100">Create item</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm table-panel admin-panel">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h2 class="h5 mb-0">Items</h2>
+                    <span class="text-muted">{{ items|length }} rows</span>
+                </div>
+                <div class="alert alert-warning py-2 admin-warning">
+                    Delete is permanent. Related Market listings and Warehouse transactions for that item will also be deleted.
+                </div>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm align-middle market-table">
+                        <thead>
+                        <tr>
+                            <th>Code</th>
+                            <th>Display name</th>
+                            <th>Category</th>
+                            <th>Tier</th>
+                            <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for item in items %}
+                        <tr>
+                            <td>{{ item.code }}</td>
+                            <td>{{ item.display_name }}</td>
+                            <td>{{ item.category }}</td>
+                            <td>{{ item.tier }}</td>
+                            <td>
+                                <form method="post" action="/master-data/items/{{ item.id }}/delete" onsubmit="return confirm('Delete item {{ item.code }} and related Market/Warehouse data?');">
+                                    <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                                </form>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

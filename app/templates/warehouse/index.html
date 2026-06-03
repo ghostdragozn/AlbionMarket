@@ -1,0 +1,151 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Warehouse module</h1>
+        <p class="text-muted mb-0 market-subtitle">Record inbound and outbound inventory transactions with oversell protection.</p>
+    </div>
+</div>
+
+{% if message %}
+<div class="alert alert-success">{{ message }}</div>
+{% endif %}
+{% if error %}
+<div class="alert alert-danger">{{ error }}</div>
+{% endif %}
+
+<div class="row g-4 mb-4">
+    <div class="col-lg-4">
+        <div class="card shadow-sm market-panel">
+            <div class="card-body">
+                <h2 class="h5">Record transaction</h2>
+                <form method="post" action="/warehouse/transactions" class="row g-3">
+                    <div class="col-12">
+                        <label class="form-label">City</label>
+                        <select name="city_id" class="form-select" required>
+                            {% for city in cities %}
+                            <option value="{{ city.id }}">{{ city.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Item</label>
+                        <select name="item_id" class="form-select" required>
+                            {% for item in items %}
+                            <option value="{{ item.id }}">{{ item.code }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Direction</label>
+                        <select name="direction" class="form-select" required>
+                            {% for direction in directions %}
+                            <option value="{{ direction.value }}">{{ direction.value }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Quantity</label>
+                        <input type="number" min="1" step="1" name="quantity" class="form-control" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Unit price</label>
+                        <input type="number" min="0" step="0.01" name="unit_price" class="form-control" required>
+                    </div>
+                    <div class="col-6">
+                        <label class="form-label">Note</label>
+                        <input type="text" name="note" class="form-control">
+                    </div>
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary w-100">Save transaction</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    <div class="col-lg-8">
+        <div class="card shadow-sm table-panel">
+            <div class="card-body">
+                <h2 class="h5">Current inventory</h2>
+                <div class="table-responsive">
+                    <table class="table table-striped table-sm align-middle mb-0 market-table">
+                        <thead>
+                        <tr>
+                            <th>City</th>
+                            <th>Item</th>
+                            <th>Current inventory</th>
+                            <th>Avg import</th>
+                            <th>Avg export</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {% for row in inventory_rows %}
+                        <tr>
+                            <td>{{ row.city_name }}</td>
+                            <td>{{ row.item_code }}</td>
+                            <td>{{ row.current_inventory }}</td>
+                            <td>{{ row.avg_import_price }}</td>
+                            <td>{{ row.avg_export_price }}</td>
+                        </tr>
+                        {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm table-panel">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h2 class="h5 mb-0">Transactions</h2>
+            <span class="text-muted">{{ transactions|length }} rows</span>
+        </div>
+        <div class="table-responsive">
+            <table class="table table-striped table-sm align-middle market-table">
+                <thead>
+                <tr>
+                    <th>Time</th>
+                    <th>City</th>
+                    <th>Item</th>
+                    <th>Direction</th>
+                    <th>Unit price</th>
+                    <th>Quantity</th>
+                    <th>Note</th>
+                    <th>Actions</th>
+                </tr>
+                </thead>
+                <tbody>
+                {% for transaction in transactions %}
+                <tr>
+                    <td>{{ transaction.transaction_at }}</td>
+                    <td>{{ transaction.city_name }}</td>
+                    <td>{{ transaction.item_code }}</td>
+                    <td>{{ transaction.direction }}</td>
+                    <td>{{ transaction.unit_price }}</td>
+                    <td>{{ transaction.quantity }}</td>
+                    <td>{{ transaction.note }}</td>
+                    <td>
+                        <form method="post" action="/warehouse/transactions/{{ transaction.id }}/delete" onsubmit="return confirm('Delete this warehouse transaction?');">
+                            {% if selected_city_id %}
+                            <input type="hidden" name="return_city_id" value="{{ selected_city_id }}">
+                            {% endif %}
+                            {% if selected_item_id %}
+                            <input type="hidden" name="return_item_id" value="{{ selected_item_id }}">
+                            {% endif %}
+                            {% if selected_direction %}
+                            <input type="hidden" name="return_direction" value="{{ selected_direction }}">
+                            {% endif %}
+                            <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}
