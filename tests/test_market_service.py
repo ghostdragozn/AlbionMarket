@@ -76,6 +76,7 @@ def test_calculate_arbitrage_supports_sorting() -> None:
     upsert_market_listing(session, city_id=1, item_id=2, unit_price=Decimal("100"), quantity=10, ratio="Trung Bình")
     upsert_market_listing(session, city_id=2, item_id=2, unit_price=Decimal("130"), quantity=10, ratio="Cao")
 
-    opportunities = calculate_arbitrage_opportunities(session, sort_by="roi_percent", sort_order="asc")
+    opportunities = calculate_arbitrage_opportunities(session, sort_by="source_ratio", sort_order="asc")
 
-    assert opportunities[0]["roi_percent"] <= opportunities[-1]["roi_percent"]
+    assert opportunities[0]["source_ratio"] == "Trung Bình"
+    assert opportunities[-1]["source_ratio"] == "Cao"

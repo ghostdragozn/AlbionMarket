@@ -81,18 +81,18 @@
             <table class="table table-striped table-sm align-middle market-table">
                 <thead>
                 <tr>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'item_code' %}active{% endif %}" href="{{ build_sort_url('item_code') }}">Item</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'source_city' %}active{% endif %}" href="{{ build_sort_url('source_city') }}">Buy city</a></th>
-                    <th>Buy ratio</th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'destination_city' %}active{% endif %}" href="{{ build_sort_url('destination_city') }}">Sell city</a></th>
-                    <th>Sell ratio</th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'buy_price' %}active{% endif %}" href="{{ build_sort_url('buy_price') }}">Buy price</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'sell_price' %}active{% endif %}" href="{{ build_sort_url('sell_price') }}">Sell price</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'net_sell_price' %}active{% endif %}" href="{{ build_sort_url('net_sell_price') }}">Taxed sell</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'per_unit_profit' %}active{% endif %}" href="{{ build_sort_url('per_unit_profit') }}">Unit profit</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'roi_percent' %}active{% endif %}" href="{{ build_sort_url('roi_percent') }}">ROI</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'tradable_quantity' %}active{% endif %}" href="{{ build_sort_url('tradable_quantity') }}">Tradable qty</a></th>
-                    <th><a class="sort-link {% if arbitrage_sort_by == 'total_profit' %}active{% endif %}" href="{{ build_sort_url('total_profit') }}">Total profit</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'item_code' %}active{% endif %}" href="{{ build_sort_url('item_code') }}">Item{% if arbitrage_sort_by == 'item_code' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'source_city' %}active{% endif %}" href="{{ build_sort_url('source_city') }}">Buy city{% if arbitrage_sort_by == 'source_city' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'source_ratio' %}active{% endif %}" href="{{ build_sort_url('source_ratio') }}">Buy ratio{% if arbitrage_sort_by == 'source_ratio' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'destination_city' %}active{% endif %}" href="{{ build_sort_url('destination_city') }}">Sell city{% if arbitrage_sort_by == 'destination_city' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'destination_ratio' %}active{% endif %}" href="{{ build_sort_url('destination_ratio') }}">Sell ratio{% if arbitrage_sort_by == 'destination_ratio' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'buy_price' %}active{% endif %}" href="{{ build_sort_url('buy_price') }}">Buy price{% if arbitrage_sort_by == 'buy_price' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'sell_price' %}active{% endif %}" href="{{ build_sort_url('sell_price') }}">Sell price{% if arbitrage_sort_by == 'sell_price' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'net_sell_price' %}active{% endif %}" href="{{ build_sort_url('net_sell_price') }}">Taxed sell{% if arbitrage_sort_by == 'net_sell_price' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'per_unit_profit' %}active{% endif %}" href="{{ build_sort_url('per_unit_profit') }}">Unit profit{% if arbitrage_sort_by == 'per_unit_profit' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'roi_percent' %}active{% endif %}" href="{{ build_sort_url('roi_percent') }}">ROI{% if arbitrage_sort_by == 'roi_percent' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'tradable_quantity' %}active{% endif %}" href="{{ build_sort_url('tradable_quantity') }}">Tradable qty{% if arbitrage_sort_by == 'tradable_quantity' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
+                    <th><a class="sort-link {% if arbitrage_sort_by == 'total_profit' %}active{% endif %}" href="{{ build_sort_url('total_profit') }}">Total profit{% if arbitrage_sort_by == 'total_profit' %} <span class="sort-arrow">{{ '▲' if arbitrage_sort_order == 'asc' else '▼' }}</span>{% endif %}</a></th>
                 </tr>
                 </thead>
                 <tbody>
@@ -101,13 +101,13 @@
                     <td>{{ row.item_code }}</td>
                     <td>{{ row.source_city }}</td>
                     <td>
-                        <span class="ratio-indicator ratio-{{ row.source_ratio|lower|replace(' ', '-') }}">
+                        <span class="ratio-indicator {% if row.source_ratio %}ratio-{{ row.source_ratio|lower|replace(' ', '-') }}{% else %}ratio-none{% endif %}">
                             <span class="ratio-dot"></span>{{ row.source_ratio if row.source_ratio else '—' }}
                         </span>
                     </td>
                     <td>{{ row.destination_city }}</td>
                     <td>
-                        <span class="ratio-indicator ratio-{{ row.destination_ratio|lower|replace(' ', '-') }}">
+                        <span class="ratio-indicator {% if row.destination_ratio %}ratio-{{ row.destination_ratio|lower|replace(' ', '-') }}{% else %}ratio-none{% endif %}">
                             <span class="ratio-dot"></span>{{ row.destination_ratio if row.destination_ratio else '—' }}
                         </span>
                     </td>

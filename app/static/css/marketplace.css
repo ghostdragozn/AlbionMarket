@@ -339,10 +339,18 @@ body.market-body {
     color: #ffe3a6;
 }
 
-.sort-link.active {
-    color: #ffd166;
+.sort-arrow {
+    font-size: 0.9em;
+    line-height: 1;
 }
 
+.ratio-none .ratio-dot {
+    background: #b9a98d;
+}
+
+.ratio-none {
+    color: var(--market-muted);
+}
 .ratio-indicator {
     display: inline-flex;
     align-items: center;
