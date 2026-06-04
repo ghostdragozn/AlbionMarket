@@ -98,31 +98,11 @@
                 <tbody>
                 {% for row in arbitrage_rows %}
                 <tr>
-                    <td>
-                        <span class="ratio-indicator {% if row.source_is_city_special_item %}city-special-item{% else %}ratio-none{% endif %}">
-                            <span class="ratio-dot"></span>{{ row.item_code }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="ratio-indicator {% if row.source_is_city_special_item %}city-special-item{% else %}ratio-none{% endif %}">
-                            <span class="ratio-dot"></span>{{ row.source_city }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="ratio-indicator {% if row.source_ratio %}ratio-{{ row.source_ratio|lower|replace(' ', '-') }}{% else %}ratio-none{% endif %}">
-                            <span class="ratio-dot"></span>{{ row.source_ratio if row.source_ratio else '—' }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="ratio-indicator {% if row.destination_is_city_special_item %}city-special-item{% else %}ratio-none{% endif %}">
-                            <span class="ratio-dot"></span>{{ row.destination_city }}
-                        </span>
-                    </td>
-                    <td>
-                        <span class="ratio-indicator {% if row.destination_ratio %}ratio-{{ row.destination_ratio|lower|replace(' ', '-') }}{% else %}ratio-none{% endif %}">
-                            <span class="ratio-dot"></span>{{ row.destination_ratio if row.destination_ratio else '—' }}
-                        </span>
-                    </td>
+                    <td>{{ row.item_code }}</td>
+                    <td>{{ row.source_city }}</td>
+                    <td>{{ row.source_ratio if row.source_ratio else '—' }}</td>
+                    <td>{{ row.destination_city }}</td>
+                    <td>{{ row.destination_ratio if row.destination_ratio else '—' }}</td>
                     <td>{{ row.buy_price }}</td>
                     <td>{{ row.sell_price }}</td>
                     <td>{{ row.net_sell_price }}</td>
