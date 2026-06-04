@@ -10,7 +10,8 @@
       "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -m pytest \"D:\\\\develop\\\\AlbionMarket\\\\tests\" -q)",
       "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -c \"import fastapi, sqlalchemy, jinja2, uvicorn; print\\('imports ok'\\)\")",
       "PowerShell(Stop-Process *)",
-      "PowerShell($env:PYTHONPATH = \"D:\\\\develop\\\\AlbionMarket\"; & \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from app.main import app; print\\(app.title\\)\")"
+      "PowerShell($env:PYTHONPATH = \"D:\\\\develop\\\\AlbionMarket\"; & \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from app.main import app; print\\(app.title\\)\")",
+      "PowerShell(& \"D:\\\\develop\\\\AlbionMarket\\\\.venv\\\\Scripts\\\\python.exe\" -c \"from app.main import app; print\\('ok'\\)\")"
     ]
   }
 }
