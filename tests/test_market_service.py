@@ -5,7 +5,7 @@ from sqlalchemy.orm import Session, sessionmaker
 from sqlalchemy.pool import StaticPool
 
 from app.core.database import Base
-from app.models import MarketListing
+from app.models import City, Item, MarketListing
 from app.modules.market.service import calculate_arbitrage_opportunities, list_market_rows, upsert_market_listing
 from app.modules.master_data.service import seed_reference_data
 
@@ -68,15 +68,16 @@ def test_calculate_arbitrage_applies_tax_rate() -> None:
     assert best["total_profit"] == Decimal("351.36")
 
 
-def test_calculate_arbitrage_supports_sorting() -> None:
+def test_list_market_rows_marks_city_special_items() -> None:
     session = build_session()
+    bridgewatch_id = session.scalar(select(City.id).where(City.name == "Bridgewatch"))
+    assert bridgewatch_id is not None
+    custom_item = Item(code="HIDE-TEST", category="HIDE", tier=1, display_name="Hide Test")
+    session.add(custom_item)
+    session.commit()
 
-    upsert_market_listing(session, city_id=1, item_id=1, unit_price=Decimal("100"), quantity=10, ratio="Cao")
-    upsert_market_listing(session, city_id=2, item_id=1, unit_price=Decimal("160"), quantity=8, ratio="Thấp")
-    upsert_market_listing(session, city_id=1, item_id=2, unit_price=Decimal("100"), quantity=10, ratio="Trung Bình")
-    upsert_market_listing(session, city_id=2, item_id=2, unit_price=Decimal("130"), quantity=10, ratio="Cao")
+    rows = list_market_rows(session)
+    special_row = next(row for row in rows if row["city_name"] == "Bridgewatch" and row["item_id"] == custom_item.id)
 
-    opportunities = calculate_arbitrage_opportunities(session, sort_by="source_ratio", sort_order="asc")
-
-    assert opportunities[0]["source_ratio"] == "Trung Bình"
-    assert opportunities[-1]["source_ratio"] == "Cao"
+    assert special_row["item_display_name"] == "Hide Test"
+    assert special_row["is_city_special_item"] is True

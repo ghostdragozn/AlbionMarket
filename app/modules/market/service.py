@@ -5,7 +5,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
-from app.core.constants import TAX_RATE, ZERO_MONEY
+from app.core.constants import CITY_SPECIAL_ITEM_CATEGORIES, TAX_RATE, ZERO_MONEY
 from app.models import City, Item, MarketListing
 
 MARKET_RATIO_OPTIONS = ("Cao", "Trung Bình", "Thấp")
@@ -87,9 +87,11 @@ def list_market_rows(
 
     listings = db.scalars(select(MarketListing)).all()
     listing_map = {(listing.city_id, listing.item_id): listing for listing in listings}
+    special_category_map = CITY_SPECIAL_ITEM_CATEGORIES
 
     rows: list[dict[str, object]] = []
     for city in cities:
+        city_special_category = special_category_map.get(city.name)
         for item in items:
             listing = listing_map.get((city.id, item.id))
             rows.append(
@@ -98,12 +100,14 @@ def list_market_rows(
                     "city_name": city.name,
                     "item_id": item.id,
                     "item_code": item.code,
+                    "item_display_name": item.display_name,
                     "category": item.category,
                     "tier": item.tier,
                     "unit_price": normalize_money(listing.unit_price) if listing else ZERO_MONEY,
                     "quantity": listing.quantity if listing else 0,
                     "ratio": listing.ratio if listing and listing.ratio else "",
                     "last_updated": format_market_timestamp(listing.updated_at) if listing else "—",
+                    "is_city_special_item": bool(city_special_category and item.category == city_special_category),
                 }
             )
 
@@ -141,6 +145,11 @@ def calculate_arbitrage_opportunities(
                 if source.city_id == destination.city_id:
                     continue
 
+                buy_special_category = CITY_SPECIAL_ITEM_CATEGORIES.get(source.city.name)
+                sell_special_category = CITY_SPECIAL_ITEM_CATEGORIES.get(destination.city.name)
+                source_is_special = bool(buy_special_category and source.item.category == buy_special_category)
+                destination_is_special = bool(sell_special_category and destination.item.category == sell_special_category)
+
                 net_sell_price = normalize_money(destination.unit_price * multiplier)
                 per_unit_profit = normalize_money(net_sell_price - source.unit_price)
                 if per_unit_profit <= 0:
@@ -158,6 +167,8 @@ def calculate_arbitrage_opportunities(
                         "destination_city": destination.city.name,
                         "source_ratio": source.ratio or "",
                         "destination_ratio": destination.ratio or "",
+                        "source_is_city_special_item": source_is_special,
+                        "destination_is_city_special_item": destination_is_special,
                         "buy_price": normalize_money(source.unit_price),
                         "sell_price": normalize_money(destination.unit_price),
                         "net_sell_price": net_sell_price,

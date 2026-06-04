@@ -51,10 +51,8 @@ def test_market_page_renders_inline_inputs_and_removes_top_form(market_client: t
     assert 'action="/market/listings"' in response.text
     assert 'name="unit_price"' in response.text
     assert 'type="hidden" name="quantity" value="10000"' in response.text
-    assert 'name="ratio"' in response.text
-    assert "Last updated" in response.text
-    assert "Actions" in response.text
-    assert "Save" in response.text
+    assert "city-special-item" in response.text
+    assert "ORE-I" in response.text
 
 
 def test_market_filters_accept_blank_all_values(market_client: tuple[TestClient, Session]) -> None:

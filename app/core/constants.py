@@ -12,6 +12,13 @@ CITY_NAMES = [
 ]
 
 ITEM_CATEGORIES = ["ORE", "LOG", "BAR", "PLANK"]
+CITY_SPECIAL_ITEM_CATEGORIES = {
+    "Fort Sterling": "ORE",
+    "Bridgewatch": "HIDE",
+    "Thetford": "FIBER",
+    "Martlock": "STONE",
+    "Lymhurst": "LOG",
+}
 TIERS = list(range(1, 9))
 
 

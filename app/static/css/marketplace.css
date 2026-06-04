@@ -263,6 +263,18 @@ body.market-body {
     color: var(--market-primary-dark);
 }
 
+.city-special-item {
+    color: #b71c1c;
+    border: 2px solid #ffe082;
+    border-radius: 999px;
+    padding: 0.22rem 0.55rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    background: rgba(255, 255, 255, 0.82);
+    box-shadow: 0 0 0 1px rgba(255, 214, 102, 0.55), 0 0 0.5rem rgba(255, 214, 102, 0.45);
+}
+
 .trading-tier {
     color: var(--market-muted);
     font-weight: 600;

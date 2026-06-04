@@ -87,8 +87,8 @@
                 <tr>
                     <td class="trading-city">{{ row.city_name }}</td>
                     <td>
-                        <div class="trading-symbol">{{ row.item_code }}</div>
-                        <div class="small table-caption-muted">{{ row.category }} · T{{ row.tier }}</div>
+                        <div class="trading-symbol {% if row.is_city_special_item %}city-special-item{% endif %}">{{ row.item_display_name }}</div>
+                        <div class="small table-caption-muted">{{ row.item_code }}</div>
                     </td>
                     <td class="text-center trading-tier">{{ row.category }}</td>
                     <td class="text-center trading-tier">T{{ row.tier }}</td>
