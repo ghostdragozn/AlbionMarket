@@ -120,6 +120,7 @@ def calculate_arbitrage_opportunities(
     tier: int | None = None,
     sort_by: str = "total_profit",
     sort_order: str = "desc",
+    roi_threshold: Decimal = Decimal("20"),
 ) -> list[dict[str, object]]:
     item_query = select(Item).order_by(Item.code)
     if category:
@@ -158,6 +159,8 @@ def calculate_arbitrage_opportunities(
                 tradable_quantity = min(source.quantity, destination.quantity)
                 total_profit = normalize_money(per_unit_profit * tradable_quantity)
                 roi_percent = normalize_money((per_unit_profit / source.unit_price) * Decimal("100"))
+                if roi_percent <= roi_threshold:
+                    continue
                 opportunities.append(
                     {
                         "item_code": item.code,

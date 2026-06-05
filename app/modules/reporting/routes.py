@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pathlib import Path
 from urllib.parse import urlencode
 
@@ -28,12 +29,14 @@ def reports_page(
     city_id: str | None = Query(default=None),
     category: str | None = Query(default=None),
     tier: str | None = Query(default=None),
+    roi_threshold: str | None = Query(default="20"),
     sort_by: str = Query(default="total_profit"),
     sort_order: str = Query(default="desc"),
     db: Session = Depends(get_db),
 ) -> HTMLResponse:
     selected_city_id = parse_optional_int(city_id)
     selected_tier = parse_optional_int(tier)
+    selected_roi_threshold = Decimal(roi_threshold) if roi_threshold not in (None, "") else Decimal("20")
     cities = db.scalars(select(City).order_by(City.name)).all()
     categories, tiers = get_item_filter_options(db)
     context = build_reports_context(
@@ -43,6 +46,7 @@ def reports_page(
         tier=selected_tier,
         arbitrage_sort_by=sort_by,
         arbitrage_sort_order=sort_order,
+        roi_threshold=selected_roi_threshold,
     )
 
     def build_sort_url(column: str) -> str:
@@ -54,6 +58,7 @@ def reports_page(
             params["category"] = category
         if selected_tier is not None:
             params["tier"] = selected_tier
+        params["roi_threshold"] = selected_roi_threshold
         return f"/reports?{urlencode(params)}"
     context.update(
         {
@@ -64,6 +69,7 @@ def reports_page(
             "selected_city_id": selected_city_id,
             "selected_category": category,
             "selected_tier": selected_tier,
+            "roi_threshold": selected_roi_threshold,
             "arbitrage_sort_by": sort_by,
             "arbitrage_sort_order": sort_order,
             "build_sort_url": build_sort_url,

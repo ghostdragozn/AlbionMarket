@@ -124,6 +124,7 @@ def build_reports_context(
     tier: int | None = None,
     arbitrage_sort_by: str = "total_profit",
     arbitrage_sort_order: str = "desc",
+    roi_threshold: Decimal = Decimal("20"),
 ) -> dict[str, object]:
     trade_rows = build_trade_rows(db, city_id=city_id, category=category, tier=tier)
     return {
@@ -137,5 +138,6 @@ def build_reports_context(
             tier=tier,
             sort_by=arbitrage_sort_by,
             sort_order=arbitrage_sort_order,
+            roi_threshold=roi_threshold,
         ),
     }
