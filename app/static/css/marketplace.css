@@ -371,6 +371,20 @@ body.market-body {
     white-space: nowrap;
 }
 
+.ratio-cao {
+    color: #2f6b3f;
+}
+
+.ratio-trung-bình,
+.ratio-trung-binh {
+    color: #b8852f;
+}
+
+.ratio-thấp,
+.ratio-thap {
+    color: #b24f3a;
+}
+
 .ratio-dot {
     width: 0.72rem;
     height: 0.72rem;
