@@ -76,6 +76,49 @@ body.market-body {
     color: var(--market-muted) !important;
 }
 
+.city-specialties {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.55rem;
+}
+
+.specialty-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.42rem 0.78rem;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    letter-spacing: 0.02em;
+    border: 1px solid rgba(43, 36, 24, 0.12);
+    box-shadow: 0 4px 10px rgba(45, 31, 9, 0.08);
+}
+
+.specialty-fort-sterling {
+    background: rgba(128, 128, 128, 0.18);
+    color: #5f6368;
+}
+
+.specialty-bridgewatch {
+    background: rgba(139, 92, 51, 0.18);
+    color: #7b4b22;
+}
+
+.specialty-thetford {
+    background: rgba(59, 130, 246, 0.18);
+    color: #1d4ed8;
+}
+
+.specialty-martlock {
+    background: rgba(17, 24, 39, 0.16);
+    color: #111827;
+}
+
+.specialty-lymhurst {
+    background: rgba(34, 197, 94, 0.18);
+    color: #15803d;
+}
+
 .market-panel,
 .filter-panel,
 .table-panel,
@@ -377,7 +420,7 @@ body.market-body {
 
 .ratio-trung-bình,
 .ratio-trung-binh {
-    color: #b8852f;
+    color: #ea7a1f;
 }
 
 .ratio-thấp,
